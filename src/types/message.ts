@@ -26,7 +26,7 @@ export function isChangeSelectionMessage(message: Message): message is ChangeSel
 
 export interface LogMessage extends Message {
   name: 'log';
-  payload: string;
+  payload: any;
 }
 
 export function isLogMessage(message: Message): message is LogMessage {

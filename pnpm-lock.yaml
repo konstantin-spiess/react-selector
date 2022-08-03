@@ -4,9 +4,10 @@ specifiers:
   '@crxjs/vite-plugin': ^1.0.13
   '@types/chrome': ^0.0.193
   '@types/react': ^18.0.15
+  '@types/react-devtools': ^3.6.0
+  '@types/react-devtools-inline': ^4.24.0
   '@types/react-dom': ^18.0.6
   '@vitejs/plugin-react': ^1.3.2
-  nanoid: ^4.0.0
   react: ^18.2.0
   react-dom: ^18.2.0
   typescript: ^4.7.4
@@ -14,7 +15,8 @@ specifiers:
 
 dependencies:
   '@types/chrome': 0.0.193
-  nanoid: 4.0.0
+  '@types/react-devtools': 3.6.0
+  '@types/react-devtools-inline': 4.24.0
   react: 18.2.0
   react-dom: 18.2.0_react@18.2.0
 
@@ -406,7 +408,17 @@ packages:
 
   /@types/prop-types/15.7.5:
     resolution: {integrity: sha512-JCB8C6SnDoQf0cNycqd/35A7MjcnK+ZTqE7judS6o7utxUCg6imJg3QK2qzHKszlTjcj2cn+NwMB2i96ubpj7w==}
-    dev: true
+
+  /@types/react-devtools-inline/4.24.0:
+    resolution: {integrity: sha512-z2s9JSptrgEe/zVaLMxPjRMIr1rT8x7Pp+SAlBtAsGfqSNiuf6iIDjtnTiz/CZq7wmIx/Lfd97cbTQGZig151Q==}
+    dependencies:
+      '@types/react': 18.0.15
+      '@types/react-reconciler': 0.28.0
+    dev: false
+
+  /@types/react-devtools/3.6.0:
+    resolution: {integrity: sha512-kEQi3iDGvabvrNoSSvmdcnuR9rQZLUgb+9UbDUcfKkKH5m/c663mXXwpPFTNCaFpVOBlO4yIoqft1hI/KARI2A==}
+    dev: false
 
   /@types/react-dom/18.0.6:
     resolution: {integrity: sha512-/5OFZgfIPSwy+YuIBP/FgJnQnsxhZhjjrnxudMddeblOouIodEQ75X14Rr4wGSG/bknL+Omy9iWlLo1u/9GzAA==}
@@ -414,17 +426,21 @@ packages:
       '@types/react': 18.0.15
     dev: true
 
+  /@types/react-reconciler/0.28.0:
+    resolution: {integrity: sha512-5cjk9ottZAj7eaTsqzPUIlrVbh3hBAO2YaEL1rkjHKB3xNAId7oU8GhzvAX+gfmlfoxTwJnBjPxEHyxkEA1Ffg==}
+    dependencies:
+      '@types/react': 18.0.15
+    dev: false
+
   /@types/react/18.0.15:
     resolution: {integrity: sha512-iz3BtLuIYH1uWdsv6wXYdhozhqj20oD4/Hk2DNXIn1kFsmp9x8d9QB6FnPhfkbhd2PgEONt9Q1x/ebkwjfFLow==}
     dependencies:
       '@types/prop-types': 15.7.5
       '@types/scheduler': 0.16.2
       csstype: 3.1.0
-    dev: true
 
   /@types/scheduler/0.16.2:
     resolution: {integrity: sha512-hppQEBDmlwhFAXKJX2KnWLYu5yMfi91yazPb2l+lbJiwW+wdo1gNeRA+3RgNSO39WYX2euey41KEwnqesU2Jew==}
-    dev: true
 
   /@vitejs/plugin-react/1.3.2:
     resolution: {integrity: sha512-aurBNmMo0kz1O4qRoY+FM4epSA39y3ShWGuqfLRA/3z0oEJAdtoSfgA3aO98/PCCHAqMaduLxIxErWrVKIFzXA==}
@@ -562,7 +578,6 @@ packages:
 
   /csstype/3.1.0:
     resolution: {integrity: sha512-uX1KG+x9h5hIJsaKR9xHUeUraxf8IODOwq9JLNPq6BwB04a/xgpq3rcx47l5BZu5zBPlgD342tdke3Hom/nJRA==}
-    dev: true
 
   /debug/2.6.9:
     resolution: {integrity: sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA==}
@@ -1028,12 +1043,6 @@ packages:
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
     dev: true
-
-  /nanoid/4.0.0:
-    resolution: {integrity: sha512-IgBP8piMxe/gf73RTQx7hmnhwz0aaEXYakvqZyE302IXW3HyVNhdNGC+O2MwMAVhLEnvXlvKtGbtJf6wvHihCg==}
-    engines: {node: ^14 || ^16 || >=18}
-    hasBin: true
-    dev: false
 
   /node-releases/2.0.6:
     resolution: {integrity: sha512-PiVXnNuFm5+iYkLBNeq5211hvO38y63T0i2KKh2KnUs3RpzJ+JtODFjkD8yjLwnDkTYF1eKXheUwdssR+NRZdg==}

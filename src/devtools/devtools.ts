@@ -1,9 +1,8 @@
-import { ChangeSelectionMessage } from '../types/message';
-import { nanoid } from 'nanoid';
+import type { ChangeSelectionMessage, LogMessage } from '../types/message';
 
-/**
- * Message passing: devtools -> background
- */
+//
+// Message passing: devtools -> background
+//
 
 // Initialize the connection to the background
 const backgroundConnection = chrome.runtime.connect({
@@ -16,27 +15,28 @@ backgroundConnection.postMessage({
   tabId: chrome.devtools.inspectedWindow.tabId,
 });
 
-/**
- * Handle element selection in inspector: mark element in dom, inform content script
- */
+//
+// Handle element selection in inspector: mark element in dom, inform content script
+//
 chrome.devtools.panels.elements.onSelectionChanged.addListener(() => {
-  const expression = `$0.setAttribute('data-react-selector-selected', 'true')`;
+  const expression = "$0.setAttribute('data-react-selector-selected', 'true')";
   chrome.devtools.inspectedWindow.eval(expression, (result, exceptionInfo) => {
     if (exceptionInfo) {
       console.error(exceptionInfo);
-    } else {
-      const message: ChangeSelectionMessage = {
-        name: 'updateSelection',
-        tabId: chrome.devtools.inspectedWindow.tabId,
-      };
-      backgroundConnection.postMessage(message);
+      return;
     }
+
+    const message: ChangeSelectionMessage = {
+      name: 'updateSelection',
+      tabId: chrome.devtools.inspectedWindow.tabId,
+    };
+    backgroundConnection.postMessage(message);
   });
 });
 
-/**
- * UI: Sidepanel
- */
+//
+// UI: Sidepanel
+//
 chrome.devtools.panels.elements.createSidebarPane('React Selector', (panel) => {
   panel.setPage('src/devtools/panel/panel.html');
 });

@@ -1,19 +1,33 @@
 import { isChangeSelectionMessage } from './types/message';
+import selector from './selector?script&module';
 
+const selectedElementMarker = import.meta.env.VITE_SELECTED_ELEMENT_MARKER;
+const selectedElemetMarkerQuery = import.meta.env.VITE_SELECTED_ELEMENT_MARKER_QUERY;
+
+const changeSelectionEvent = new Event('changeSelection');
 let selectedElement: Element | null;
 
+// Inject selector script into page
+const injectScript = document.createElement('script');
+injectScript.src = chrome.runtime.getURL(selector);
+injectScript.type = 'module';
+document.head.prepend(injectScript);
+document.head.removeChild(injectScript);
+
+// Listen for selection change from backgrounds
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  if (isChangeSelectionMessage(request)) {
-    if (selectedElement) {
-      selectedElement.removeAttribute('data-react-selector-selected');
-    }
-    selectedElement = document.querySelector('[' + 'data-react-selector-selected' + ']');
-    if (selectedElement) {
-      console.log(selectedElement);
-    }
+  if (!isChangeSelectionMessage(request)) return;
+
+  // Update selected element reference
+  if (selectedElement) {
+    selectedElement.removeAttribute(selectedElementMarker);
   }
-  // console.log(sender.tab ? 'from a content script:' + sender.tab.url : 'from the extension');
-  // if (request.greeting === 'hello') sendResponse({ farewell: 'goodbye' });
+  selectedElement = document.querySelector(selectedElemetMarkerQuery);
+
+  // Dispach event for selector script
+  if (selectedElement) {
+    document.dispatchEvent(changeSelectionEvent);
+  }
 });
 
 export {};

@@ -1,15 +1,8 @@
-/**
- * Message passing: devtools -> background
- */
+import { Message, isInitMessage, isMessage, isLogMessage, isChangeSelectionMessage } from './types/message';
 
-import {
-  Message,
-  InitMessage,
-  isInitMessage,
-  isMessage,
-  isLogMessage,
-  isChangeSelectionMessage,
-} from './types/message';
+//
+// Message passing: devtools -> background
+//
 
 // Connections from devtools to background
 let connections: { [key: number]: chrome.runtime.Port } = {};
