@@ -12,26 +12,55 @@ function init() {
   }
 
   document.addEventListener('changeSelection', () => {
-    const selectedElement = document.querySelector(selectedElemetMarkerQuery);
+    handleSelectionChange();
+  });
+
+  function handleSelectionChange() {
+    const selectedElement = document.querySelector(selectedElemetMarkerQuery) as HTMLElement;
     if (!selectedElement) return;
 
-    const fibernode = getReactFiber(selectedElement);
+    const selector = getSelector(selectedElement);
+    console.log(selector);
 
-    if (!fibernode) {
-      console.log('not part of react application');
-      return;
+    // const fibernode = getReactFiber(selectedElement);
+
+    // if (!fibernode) {
+    //   console.log('not part of react application');
+    //   return;
+    // }
+    // if (isReactFiberRootNode(fibernode)) {
+    //   console.log('React root');
+    //   return;
+    // }
+    // const name = getReactComponentName(fibernode);
+    // if (!name) {
+    //   console.log('no react component');
+    //   return;
+    // }
+    // console.log(name);
+  }
+
+  function getSelector(element: HTMLElement) {
+    let currentElement: HTMLElement | null = element;
+    let selector = getElementSelector(currentElement);
+    while (currentElement != reactRootElement) {
+      currentElement = currentElement.parentElement!;
+      selector = `${getElementSelector(currentElement)} > ${selector}`;
     }
-    if (isReactFiberRootNode(fibernode)) {
-      console.log('React root');
-      return;
+    return selector;
+  }
+
+  function getElementSelector(element: HTMLElement) {
+    const id = element.id;
+    if (id) {
+      return `#${id}`;
     }
-    const name = getReactComponentName(fibernode);
-    if (!name) {
-      console.log('no react component');
-      return;
+    const className = element.className;
+    if (className) {
+      return `.${className.split(' ').join('.')}`;
     }
-    console.log(name);
-  });
+    return element.tagName.toLowerCase();
+  }
 }
 
 export {};
