@@ -1,4 +1,4 @@
-import { isReactRoot } from './reactUtils';
+import { isReactRoot } from './react';
 
 /**
  * Find the react root element with bfs
