@@ -1,4 +1,5 @@
-import type { ChangeSelectionMessage, LogMessage } from '../types/message';
+import { nanoid } from 'nanoid';
+import type { ChangeSelectionMessage } from '../types/message';
 
 //
 // Message passing: devtools -> background
@@ -19,7 +20,8 @@ backgroundConnection.postMessage({
 // Handle element selection in inspector: mark element in dom, inform content script
 //
 chrome.devtools.panels.elements.onSelectionChanged.addListener(() => {
-  const expression = "$0.setAttribute('data-react-selector-selected', 'true')";
+  const selectionId = nanoid(5);
+  const expression = `$0.setAttribute('data-react-selector-id', '${selectionId}')`;
   chrome.devtools.inspectedWindow.eval(expression, (result, exceptionInfo) => {
     if (exceptionInfo) {
       console.error(exceptionInfo);
@@ -29,6 +31,7 @@ chrome.devtools.panels.elements.onSelectionChanged.addListener(() => {
     const message: ChangeSelectionMessage = {
       name: 'updateSelection',
       tabId: chrome.devtools.inspectedWindow.tabId,
+      selectionId,
     };
     backgroundConnection.postMessage(message);
   });

@@ -1,10 +1,7 @@
 import { isChangeSelectionMessage } from './types/message';
 import selector from './selector?script&module';
+import { ChangeSelectionEvent } from './types/event';
 
-const selectedElementMarker = import.meta.env.VITE_SELECTED_ELEMENT_MARKER;
-const selectedElemetMarkerQuery = import.meta.env.VITE_SELECTED_ELEMENT_MARKER_QUERY;
-
-const changeSelectionEvent = new Event('changeSelection');
 let selectedElement: Element | null;
 
 // Inject selector script into page
@@ -18,16 +15,23 @@ document.head.removeChild(injectScript);
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   if (!isChangeSelectionMessage(request)) return;
 
-  // Update selected element reference
-  if (selectedElement) {
-    selectedElement.removeAttribute(selectedElementMarker);
-  }
-  selectedElement = document.querySelector(selectedElemetMarkerQuery);
+  const selectionId = request.selectionId;
+  selectedElement = document.querySelector(`[data-react-selector-id='${selectionId}']`);
 
   // Dispach event for selector script
   if (selectedElement) {
+    const changeSelectionEvent = new CustomEvent<ChangeSelectionEvent>('changeSelection', {
+      detail: { selectionId },
+    });
     document.dispatchEvent(changeSelectionEvent);
   }
+
+  // remove all markers
+  const markedElements = document.querySelectorAll('[data-react-selector-id]');
+  markedElements.forEach((element) => {
+    if (element.getAttribute('data-react-selector-id') == selectionId) return;
+    element.removeAttribute('data-react-selector-id');
+  });
 });
 
 export {};

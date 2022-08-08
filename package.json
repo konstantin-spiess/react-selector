@@ -13,6 +13,7 @@
     "@types/chrome": "^0.0.193",
     "@types/react-devtools": "^3.6.0",
     "@types/react-devtools-inline": "^4.24.0",
+    "nanoid": "^4.0.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

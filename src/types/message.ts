@@ -16,8 +16,9 @@ export function isInitMessage(message: Message): message is InitMessage {
 }
 
 export interface ChangeSelectionMessage extends Message {
-  tabId: number;
   name: 'updateSelection';
+  tabId: number;
+  selectionId: string;
 }
 
 export function isChangeSelectionMessage(message: Message): message is ChangeSelectionMessage {

@@ -1,8 +1,7 @@
+import { ChangeSelectionEvent } from './types/event';
 import { Selector, SelectorType } from './types/selector';
 import { findReactRoot } from './utils/dom';
 import { getReactComponentName, getReactFiber, isReactFiberRootNode } from './utils/react';
-
-const selectedElemetMarkerQuery = import.meta.env.VITE_SELECTED_ELEMENT_MARKER_QUERY;
 
 init();
 
@@ -12,12 +11,13 @@ function init() {
     return;
   }
 
-  document.addEventListener('changeSelection', () => {
-    handleSelectionChange();
+  document.addEventListener('changeSelection', (event: Event) => {
+    const detail = (event as CustomEvent<ChangeSelectionEvent>).detail;
+    handleSelectionChange(detail.selectionId);
   });
 
-  function handleSelectionChange() {
-    const selectedElement = document.querySelector(selectedElemetMarkerQuery) as HTMLElement;
+  function handleSelectionChange(selectionId: string) {
+    const selectedElement = document.querySelector(`[data-react-selector-id='${selectionId}']`) as HTMLElement;
     if (!selectedElement) return; // no matching element
 
     const reactFiber = getReactFiber(selectedElement);
