@@ -1,3 +1,4 @@
+import { Selector, SelectorType } from './types/selector';
 import { findReactRoot } from './utils/dom';
 import { getReactComponentName, getReactFiber, isReactFiberRootNode } from './utils/react';
 
@@ -28,10 +29,10 @@ function init() {
 
   function getSelector(element: HTMLElement) {
     let currentElement: HTMLElement | null = element;
-    let selector = getElementSelector(currentElement);
+    let selector = [getElementSelector(currentElement)];
     while (currentElement != reactRootElement) {
       currentElement = currentElement.parentElement!;
-      selector = `${getElementSelector(currentElement)} > ${selector}`;
+      selector.unshift(getElementSelector(currentElement));
     }
     return selector;
   }
@@ -41,26 +42,43 @@ function init() {
    * @param element HTMLElement inside the react root element
    * @returns selector string of the element
    */
-  function getElementSelector(element: HTMLElement) {
+  function getElementSelector(element: HTMLElement): Selector {
     const reactFiber = getReactFiber(element)!;
 
     if (isReactFiberRootNode(reactFiber)) {
-      return 'ReactRoot';
+      return {
+        type: SelectorType.REACT_ROOT,
+        value: 'ReactRoot',
+      };
     }
+
     const name = getReactComponentName(reactFiber);
     if (name) {
-      return `ReactComponent:${name}`;
+      return {
+        type: SelectorType.REACT_COMPONENT,
+        value: name,
+      };
     }
 
     const id = element.id;
     if (id) {
-      return `#${id}`;
+      return {
+        type: SelectorType.ID,
+        value: id,
+      };
     }
     const className = element.className;
     if (className) {
-      return `.${className.split(' ').join('.')}`;
+      return {
+        type: SelectorType.CLASS,
+        value: className,
+      };
     }
-    return element.tagName.toLowerCase();
+
+    return {
+      type: SelectorType.TAG,
+      value: element.tagName.toLowerCase(),
+    };
   }
 }
 
