@@ -1,5 +1,5 @@
 import { nanoid } from 'nanoid';
-import type { ChangeSelectionMessage } from '../types/message';
+import { ChangeSelectionMessage, isSelectorMessage } from '../types/message';
 
 //
 // Message passing: devtools -> background
@@ -42,6 +42,12 @@ chrome.devtools.panels.elements.onSelectionChanged.addListener(() => {
 //
 chrome.devtools.panels.elements.createSidebarPane('React Selector', (panel) => {
   panel.setPage('src/devtools/panel/panel.html');
+
+  backgroundConnection.onMessage.addListener((message) => {
+    if (isSelectorMessage(message)) {
+      panel.setObject(message.selector);
+    }
+  });
 });
 
 export {};

@@ -24,7 +24,13 @@ function init() {
     if (!reactFiber) return; // element not part of react application
 
     const selector = getSelector(selectedElement);
-    console.log(selector);
+    window.postMessage(
+      {
+        name: 'selector',
+        selector,
+      },
+      '*'
+    );
   }
 
   function getSelector(element: HTMLElement) {

@@ -34,4 +34,17 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
   });
 });
 
+// Listener for messages from selector script
+window.addEventListener('message', function (event) {
+  // Only accept messages from the same frame
+  if (event.source !== window) return;
+
+  const message = event.data;
+
+  // Only accept messages that we know are ours
+  if (typeof message !== 'object' || message === null || message.name !== 'selector') return;
+
+  chrome.runtime.sendMessage(message);
+});
+
 export {};

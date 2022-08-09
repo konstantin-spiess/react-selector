@@ -1,3 +1,5 @@
+import { Selector } from './selector';
+
 export interface Message {
   name: string;
 }
@@ -32,4 +34,13 @@ export interface LogMessage extends Message {
 
 export function isLogMessage(message: Message): message is LogMessage {
   return message.name === 'log';
+}
+
+export interface SelectorMessage extends Message {
+  name: 'selector';
+  selector: Selector[];
+}
+
+export function isSelectorMessage(message: Message): message is SelectorMessage {
+  return message.name === 'selector';
 }
