@@ -38,7 +38,7 @@ export function isLogMessage(message: Message): message is LogMessage {
 
 export interface SelectorMessage extends Message {
   name: 'selector';
-  selector: Selector[];
+  selectors: Selector[];
 }
 
 export function isSelectorMessage(message: Message): message is SelectorMessage {

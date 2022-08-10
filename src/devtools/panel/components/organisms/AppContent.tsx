@@ -2,11 +2,11 @@ import React from 'react';
 import { useSelectorContext } from '../../contexts/SelectorContext';
 
 const AppContent = () => {
-  const { selector } = useSelectorContext();
+  const { selectors } = useSelectorContext();
   return (
     <div>
       Selector:
-      <p>{JSON.stringify(selector)}</p>
+      <p>{JSON.stringify(selectors)}</p>
     </div>
   );
 };

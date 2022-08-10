@@ -1,5 +1,5 @@
 import { ChangeSelectionEvent } from './types/event';
-import { Selector, SelectorType } from './types/selector';
+import { Selector, SelectorElement, SelectorElementType } from './types/selector';
 import { findReactRoot } from './utils/dom';
 import { getReactComponentName, getReactFiber, isReactFiberRootNode } from './utils/react';
 
@@ -24,16 +24,17 @@ function init() {
     if (!reactFiber) return; // element not part of react application
 
     const selector = getSelector(selectedElement);
+
     window.postMessage(
       {
         name: 'selector',
-        selector,
+        selectors: [selector],
       },
       '*'
     );
   }
 
-  function getSelector(element: HTMLElement) {
+  function getSelector(element: HTMLElement): Selector {
     let currentElement: HTMLElement | null = element;
     let selector = [getElementSelector(currentElement)];
     while (currentElement != reactRootElement) {
@@ -48,12 +49,12 @@ function init() {
    * @param element HTMLElement inside the react root element
    * @returns selector string of the element
    */
-  function getElementSelector(element: HTMLElement): Selector {
+  function getElementSelector(element: HTMLElement): SelectorElement {
     const reactFiber = getReactFiber(element)!;
 
     if (isReactFiberRootNode(reactFiber)) {
       return {
-        type: SelectorType.REACT_ROOT,
+        type: SelectorElementType.REACT_ROOT,
         value: 'ReactRoot',
       };
     }
@@ -61,7 +62,7 @@ function init() {
     const name = getReactComponentName(reactFiber);
     if (name) {
       return {
-        type: SelectorType.REACT_COMPONENT,
+        type: SelectorElementType.REACT_COMPONENT,
         value: name,
       };
     }
@@ -69,20 +70,20 @@ function init() {
     const id = element.id;
     if (id) {
       return {
-        type: SelectorType.ID,
+        type: SelectorElementType.ID,
         value: id,
       };
     }
     const className = element.className;
     if (className) {
       return {
-        type: SelectorType.CLASS,
+        type: SelectorElementType.CLASS,
         value: className,
       };
     }
 
     return {
-      type: SelectorType.TAG,
+      type: SelectorElementType.TAG,
       value: element.tagName.toLowerCase(),
     };
   }

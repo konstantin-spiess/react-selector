@@ -3,11 +3,11 @@ import { isSelectorMessage } from '../../../types/message';
 import { Selector } from '../../../types/selector';
 
 export type SelectorContext = {
-  selector: Selector[] | null;
+  selectors: Selector[] | null;
 };
 
 export const SelectorContext = React.createContext<SelectorContext>({
-  selector: null,
+  selectors: null,
 });
 
 export function useSelectorContext() {
@@ -19,7 +19,7 @@ export type SelectorContextProviderProps = {
 };
 
 export const SelectorContextProvider: FC<SelectorContextProviderProps> = (props) => {
-  const [selector, setSelector] = useState<Selector[]>([]);
+  const [selectors, setSelectors] = useState<Selector[]>([]);
 
   const devtoolsConnection = chrome.runtime.connect({ name: 'panel' });
 
@@ -30,9 +30,9 @@ export const SelectorContextProvider: FC<SelectorContextProviderProps> = (props)
 
   devtoolsConnection.onMessage.addListener((message) => {
     if (isSelectorMessage(message)) {
-      setSelector(message.selector);
+      setSelectors(message.selectors);
     }
   });
 
-  return <SelectorContext.Provider value={{ selector }}>{props.children}</SelectorContext.Provider>;
+  return <SelectorContext.Provider value={{ selectors }}>{props.children}</SelectorContext.Provider>;
 };
