@@ -10,11 +10,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@radix-ui/react-icons": "^1.1.1",
     "@types/chrome": "^0.0.193",
+    "@types/react-copy-to-clipboard": "^5.0.4",
     "@types/react-devtools": "^3.6.0",
     "@types/react-devtools-inline": "^4.24.0",
     "nanoid": "^4.0.0",
     "react": "^18.2.0",
+    "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^18.2.0"
   },
   "devDependencies": {

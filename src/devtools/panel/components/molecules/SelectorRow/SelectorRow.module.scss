@@ -1,0 +1,14 @@
+.elements {
+  display: flex;
+  flex-flow: row wrap;
+  gap: 10px;
+}
+
+.copy {
+  margin-right: 10px;
+}
+
+.wrapper {
+  display: flex;
+  flex-flow: row nowrap;
+}
