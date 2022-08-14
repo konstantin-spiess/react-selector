@@ -1,12 +1,11 @@
 .elements {
   display: flex;
   flex-flow: row wrap;
-  gap: 10px;
+  row-gap: 10px;
 }
 
 .copy {
   display: grid;
-  // grid-template-rows: 1fr 1fr;s
   place-items: center;
   gap: 10px;
   margin-right: 10px;
@@ -15,4 +14,11 @@
 .wrapper {
   display: flex;
   flex-flow: row nowrap;
+}
+
+.element {
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: center;
 }

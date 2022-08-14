@@ -1,4 +1,5 @@
-import React, { FC } from 'react';
+import { ChevronRightIcon } from '@radix-ui/react-icons';
+import { FC } from 'react';
 import { Selector } from '../../../../../types/selector';
 import { getCypressQueryFromSelector } from '../../../../../utils/selector';
 import ClipboardCopyButton from '../ClipboardCopyButton/ClipboardCopyButton';
@@ -16,8 +17,15 @@ const SelectorRow: FC<SelectorRowProps> = ({ selector }) => {
         <ClipboardCopyButton value={getCypressQueryFromSelector(selector)} />
       </div>
       <div className={s.elements}>
-        {selector.map((element) => {
-          return <SelectorElement element={element} />;
+        {selector.map((element, index) => {
+          const spacer = index == 0 ? null : <ChevronRightIcon />;
+
+          return (
+            <div className={s.element}>
+              {spacer}
+              <SelectorElement element={element} />
+            </div>
+          );
         })}
       </div>
     </div>
