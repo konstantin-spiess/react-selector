@@ -1,26 +1,34 @@
-@import 'variables';
 @import 'react-toastify/dist/ReactToastify.min.css';
+:root {
+  --bg: #fff;
+  --border: #242424;
+  --border-radius: 8px;
+  --elm: #242424;
+  --elm-hover: #757575;
+  --bg-elm: #fafafa;
+  --bg-elm-hover: #f0f0f0;
+
+  @media (prefers-color-scheme: dark) {
+    --bg: #242424;
+    --border: #fff;
+    --elm: #fff;
+    --elm-hover: #757575;
+    --bg-elm: #1a1a1a;
+    --bg-elm-hover: #1a1a1a;
+  }
+}
+:root {
+  background-color: var(--bg);
+}
 
 // react-toastify
 :root {
-  --toastify-color-light: #fff;
-  --toastify-color-dark: #121212;
-  --toastify-color-transparent: rgba(255, 255, 255, 0.7);
-
   --toastify-toast-width: 200px;
-  --toastify-toast-background: #fff;
+  --toastify-toast-background: var(--bg);
   --toastify-toast-min-height: 40px;
   --toastify-toast-max-height: 800px;
   --toastify-font-family: inherit;
-  --toastify-z-index: 9999;
-
-  --toastify-text-color-light: #757575;
-  --toastify-text-color-dark: #fff;
-
-  --toastify-spinner-color: #616161;
-  --toastify-spinner-color-empty-area: #e0e0e0;
 }
-
 // :root  {
 //   font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
 //   font-size: 16px;
