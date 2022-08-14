@@ -1,6 +1,6 @@
 import React, { FC } from 'react';
 import { Selector } from '../../../../../types/selector';
-import { getCypressQuery } from '../../../../../utils/selector';
+import { getCypressQueryFromSelector } from '../../../../../utils/selector';
 import ClipboardCopyButton from '../ClipboardCopyButton/ClipboardCopyButton';
 import SelectorElement from '../SelectorElement/SelectorElement';
 import s from './SelectorRow.module.scss';
@@ -13,7 +13,7 @@ const SelectorRow: FC<SelectorRowProps> = ({ selector }) => {
   return (
     <div className={s.wrapper}>
       <div className={s.copy}>
-        <ClipboardCopyButton value={getCypressQuery(selector)} />
+        <ClipboardCopyButton value={getCypressQueryFromSelector(selector)} />
       </div>
       <div className={s.elements}>
         {selector.map((element) => {

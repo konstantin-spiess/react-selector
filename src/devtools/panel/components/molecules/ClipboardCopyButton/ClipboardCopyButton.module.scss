@@ -1,0 +1,27 @@
+@import '../../../variables';
+
+.wrapper {
+  display: grid;
+  place-content: center;
+  border-radius: $border-radius;
+  // border: 1px solid $border-light;
+  padding: 10px;
+  background-color: $bg-elm-light;
+
+  &:hover {
+    background-color: $bg-elm-hover-light;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    border-color: $border-dark;
+    background-color: $bg-elm-dark;
+    &:hover {
+      background-color: $bg-elm-hover-dark;
+    }
+  }
+}
+
+.copyMessage {
+  color: #000 !important;
+  border-radius: $border-radius !important;
+}

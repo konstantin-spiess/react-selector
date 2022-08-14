@@ -5,6 +5,10 @@
 }
 
 .copy {
+  display: grid;
+  // grid-template-rows: 1fr 1fr;s
+  place-items: center;
+  gap: 10px;
   margin-right: 10px;
 }
 
