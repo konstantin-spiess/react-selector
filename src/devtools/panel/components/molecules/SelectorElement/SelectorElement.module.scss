@@ -1,3 +1,5 @@
+@import '../../../variables';
+
 .wrapper {
   display: flex;
   flex-flow: row nowrap;
@@ -5,7 +7,15 @@
   justify-content: center;
   gap: 5px;
   border: 1px solid #e8e8e8;
-  border-radius: 5px;
-  padding: 5px;
-  background-color: #fafafa;
+  border-radius: $border-radius;
+  padding: 7px;
+  color: $elm-light;
+  background-color: $bg-elm-light;
+}
+
+.active {
+  &hover {
+    color: $elm-hover-light;
+    background-color: $bg-elm-hover-light;
+  }
 }

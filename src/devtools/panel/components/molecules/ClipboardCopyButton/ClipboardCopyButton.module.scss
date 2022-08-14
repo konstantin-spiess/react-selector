@@ -4,12 +4,10 @@
   display: grid;
   place-content: center;
   border-radius: $border-radius;
-  // border: 1px solid $border-light;
-  padding: 10px;
-  background-color: $bg-elm-light;
-
+  cursor: pointer;
+  color: $elm-light;
   &:hover {
-    background-color: $bg-elm-hover-light;
+    color: $elm-hover-light;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -24,4 +22,9 @@
 .copyMessage {
   color: #000 !important;
   border-radius: $border-radius !important;
+}
+
+svg {
+  width: 20px;
+  height: 20px;
 }
