@@ -1,7 +1,8 @@
 export type SelectorElement = {
   type: SelectorElementType;
   value: string;
-  nthChild?: number;
+  nthChild: number;
+  nthChildNecessary: boolean;
 };
 
 export enum SelectorElementType {

@@ -24,15 +24,16 @@ function getCypressQueryFromSelectorElement(selectorElement: SelectorElement, in
   let nthChild = '';
   switch (selectorElement.type) {
     case SelectorElementType.REACT_COMPONENT:
-      nthChild = selectorElement.nthChild ? `.nthNode(${selectorElement.nthChild})` : '';
+      nthChild = selectorElement.nthChildNecessary ? `.nthNode(${selectorElement.nthChild})` : '';
       return `.react('${selectorElement.value}')${nthChild}`;
     case SelectorElementType.ID:
+      nthChild = selectorElement.nthChildNecessary ? `:nth-child(${selectorElement.nthChild})` : '';
       return `.${functionName}('#${selectorElement.value}')`;
     case SelectorElementType.CLASS:
-      nthChild = selectorElement.nthChild ? `:nth-child(${selectorElement.nthChild})` : '';
+      nthChild = selectorElement.nthChildNecessary ? `:nth-child(${selectorElement.nthChild})` : '';
       return `.${functionName}('.${selectorElement.value}${nthChild}')`;
     case SelectorElementType.TAG:
-      nthChild = selectorElement.nthChild ? `:nth-child(${selectorElement.nthChild})` : '';
+      nthChild = selectorElement.nthChildNecessary ? `:nth-child(${selectorElement.nthChild})` : '';
       return `.${functionName}('${selectorElement.value}${nthChild})'`;
     default:
       return '';

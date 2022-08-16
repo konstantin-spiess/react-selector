@@ -15,7 +15,7 @@ const SelectorElement: FC<SelectorElementProps> = ({ element }) => {
         <Text type="tertiary" value={element.type} />
         <Text type="secondary" value={element.value} />
       </div>
-      {element.nthChild && (
+      {element.nthChildNecessary && (
         <div className={s.label}>
           <Label value={element.nthChild.toString()} />
         </div>
