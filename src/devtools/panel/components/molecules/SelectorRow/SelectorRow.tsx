@@ -1,7 +1,7 @@
 import { ChevronRightIcon } from '@radix-ui/react-icons';
 import { FC } from 'react';
 import { Selector } from '../../../../../types/selector';
-import { getCypressQueryFromSelector } from '../../../../../utils/selector';
+import { getCypressQueryFromSelector } from '../../../../../utils/cypress';
 import ClipboardCopyButton from '../ClipboardCopyButton/ClipboardCopyButton';
 import SelectorElement from '../SelectorElement/SelectorElement';
 import s from './SelectorRow.module.scss';

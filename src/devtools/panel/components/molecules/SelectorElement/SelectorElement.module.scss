@@ -3,10 +3,8 @@
   flex-flow: row nowrap;
   align-items: center;
   justify-content: center;
-  gap: 5px;
   border: 1px solid #e8e8e8;
   border-radius: var(--border-radius);
-  padding: 7px;
   color: var(--elm);
   background-color: var(--bg-elm);
 }
@@ -16,4 +14,15 @@
     color: var(--elm-hover);
     background-color: var(--bg-elm-hover);
   }
+}
+
+.text {
+  display: flex;
+  flex-flow: row nowrap;
+  gap: 5px;
+  padding: 5px;
+}
+
+.label {
+  padding: 0 5px 0 0;
 }
