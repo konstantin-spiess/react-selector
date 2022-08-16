@@ -5,11 +5,10 @@ export type SelectorElement = {
 };
 
 export enum SelectorElementType {
-  ID = 'ID',
-  CLASS = 'CLASS',
-  TAG = 'TAG',
-  REACT_ROOT = 'REACT_ROOT',
-  REACT_COMPONENT = 'REACT_COMPONENT',
+  ID = 'Id',
+  CLASS = 'Class',
+  TAG = 'Tag',
+  REACT_COMPONENT = 'Component',
 }
 
 export type Selector = SelectorElement[];

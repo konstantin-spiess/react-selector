@@ -58,7 +58,7 @@ export function getReactFiber(element: any) {
  * @param fiber fiber node
  * @returns React component name or null
  */
-export function getReactComponentName(fiber: FiberNode) {
+export function getReactComponentNameFromFiber(fiber: FiberNode) {
   const componentType = fiber.return?.type;
   if (!componentType) {
     return null;
@@ -70,10 +70,42 @@ export function getReactComponentName(fiber: FiberNode) {
 }
 
 /**
+ * Get react component name
+ * @param element element node
+ * @returns React component name or null
+ */
+export function getReactComponentNameFromElement(element: Element) {
+  const fiber = getReactFiber(element);
+  if (!fiber) return null;
+  if (isReactFiberRootNode(fiber)) return null;
+  return getReactComponentNameFromFiber(fiber);
+}
+
+/**
  * Check type FiberRootNode
  * @param fiberNode FiberNode oder FiberRootNode
  * @returns true if FiberRootNode
  */
 export function isReactFiberRootNode(fiberNode: FiberNode | FiberRootNode): fiberNode is FiberRootNode {
   return fiberNode.hasOwnProperty('current');
+}
+
+export function getUniqueReactComponents(startNode: Element) {
+  let components: string[] = [];
+  const queue = [startNode];
+  while (queue.length > 0) {
+    const currentElement = queue.shift()!;
+    if (isReactComponent(currentElement)) {
+      const reactFiber = getReactFiber(currentElement) as FiberNode;
+      if (!reactFiber) break;
+      const componentName = getReactComponentNameFromFiber(reactFiber);
+      if (componentName && !components.includes(componentName)) {
+        components.push(componentName);
+      }
+    }
+    for (const child of currentElement.children) {
+      queue.push(child);
+    }
+  }
+  return components;
 }

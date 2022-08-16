@@ -19,4 +19,47 @@ export function findReactRoot(startElement: HTMLElement): HTMLElement | null {
   return null;
 }
 
-export {};
+/**
+ * Typeguard for Element
+ * @param node node to check
+ * @returns element type predicate
+ */
+export function isElement(node: Node): node is Element {
+  return node.ELEMENT_NODE === 1;
+}
+
+/**
+ * Get index of element in parent element
+ * @param element element to get index of
+ * @returns index or -1 if not found
+ */
+export function getIndexInParent(element: Element): number {
+  let index = 1;
+  for (const child of element.parentNode!.children) {
+    if (child === element) {
+      return index;
+    }
+    index++;
+  }
+  return -1;
+}
+
+// export function getUniqueElements(startNode: Element) {
+//   let components: string[] = [];
+//   const queue = [startNode];
+//   while (queue.length > 0) {
+//     const currentElement = queue.shift()!;
+
+//     const reactFiber = getReactFiber(currentElement) as FiberNode;
+//     if (!reactFiber) break;
+//     const componentName = getReactComponentNameFromFiber(reactFiber);
+//     if (componentName && !components.includes(componentName)) {
+//       components.push(componentName);
+//     }
+
+//     for (const child of currentElement.children) {
+//       queue.push(child);
+//     }
+//   }
+//   return components;
+// }
