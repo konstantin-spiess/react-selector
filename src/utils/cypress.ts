@@ -34,7 +34,7 @@ function getCypressQueryFromSelectorElement(selectorElement: SelectorElement, in
       return `.${functionName}('.${selectorElement.value}${nthChild}')`;
     case SelectorElementType.TAG:
       nthChild = selectorElement.nthChildNecessary ? `:nth-child(${selectorElement.nthChild})` : '';
-      return `.${functionName}('${selectorElement.value}${nthChild})'`;
+      return `.${functionName}('${selectorElement.value}${nthChild}')`;
     default:
       return '';
   }
