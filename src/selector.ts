@@ -18,7 +18,7 @@ function init() {
   });
 
   function handleSelectionChange(selectionId: string) {
-    const selectedElement = document.querySelector(`[data-react-selector-id='${selectionId}']`);
+    const selectedElement = document.querySelector(`[data-react-selector-id='${selectionId}']`) as HTMLElement;
     // no matching element
     if (!selectedElement) return;
 

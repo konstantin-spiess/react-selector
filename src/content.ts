@@ -26,7 +26,7 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     document.dispatchEvent(changeSelectionEvent);
   }
 
-  // remove all markers
+  // Remove all markers
   const markedElements = document.querySelectorAll('[data-react-selector-id]');
   markedElements.forEach((element) => {
     if (element.getAttribute('data-react-selector-id') == selectionId) return;

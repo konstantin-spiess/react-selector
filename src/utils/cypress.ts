@@ -24,7 +24,7 @@ function getCypressQueryFromSelectorElement(selectorElement: SelectorElement, in
   let nthChild = '';
   switch (selectorElement.type) {
     case SelectorElementType.REACT_COMPONENT:
-      nthChild = selectorElement.nthChildNecessary ? `.nthNode(${selectorElement.nthChild})` : '';
+      nthChild = selectorElement.nthChildNecessary ? `.eq(${selectorElement.nthChild - 1})` : '';
       return `.react('${selectorElement.value}')${nthChild}`;
     case SelectorElementType.ID:
       nthChild = selectorElement.nthChildNecessary ? `:nth-child(${selectorElement.nthChild})` : '';

@@ -1,5 +1,5 @@
 import { Selector, SelectorElement, SelectorElementType } from '../types/selector';
-import { getIndexInParent, isElement } from './dom';
+import { getIndexInParent, isHTMLElement } from './dom';
 import { getReactComponentNameFromElement, isReactComponent, isReactRoot } from './react';
 
 /**
@@ -7,39 +7,34 @@ import { getReactComponentNameFromElement, isReactComponent, isReactRoot } from 
  * @param element Element to get the selector for
  * @returns Selector for the given element
  */
-export function getSelector(element: Element): Selector {
+export function getSelector(element: HTMLElement): Selector {
   const globalUniqueElementSelectors = getUniqueSelectorElements(document.body);
-  console.log('globalUniqueElementSelectors', globalUniqueElementSelectors);
 
   let startElement = element;
   let startElementSelector = getElementSelector(startElement);
 
-  while (!globalUniqueElementSelectors.has(selectorElementToString(startElementSelector))) {
-    if (!startElement.parentNode || !isElement(startElement.parentNode)) {
-      console.log('no parent', startElementSelector);
-      break;
-    }
-    startElement = startElement.parentNode;
+  while (!isUniqueSelectorElement(startElementSelector)) {
+    startElement = startElement.parentElement!;
     startElementSelector = getElementSelector(startElement);
   }
 
-  console.log('startElement', startElementSelector);
-
-  let selector = [startElementSelector];
+  let selector = [];
   let currentElement = element;
 
-  console.log('currentElement', currentElement);
-
+  // TODO: Replace with optimized algorithm
   while (currentElement != startElement) {
     selector.unshift(getElementSelector(currentElement));
-    if (!currentElement.parentNode || !isElement(currentElement.parentNode)) {
-      console.log('no parent', startElementSelector);
-      break;
-    }
-    currentElement = currentElement.parentNode;
+    currentElement = currentElement.parentElement!;
   }
-  console.log('selector', selector);
+
+  selector.unshift(startElementSelector);
   return selector;
+
+  function isUniqueSelectorElement(selectorElement: SelectorElement) {
+    return globalUniqueElementSelectors.some((uniqueSelectorElement) => {
+      return compareSelectorElementsEquals(selectorElement, uniqueSelectorElement);
+    });
+  }
 }
 
 /**
@@ -48,27 +43,39 @@ export function getSelector(element: Element): Selector {
  * @returns Set of all unique selectors for the given element and its children
  */
 function getUniqueSelectorElements(startElement: Element) {
-  let uniqueSelectorElements = new Map<string, SelectorElement>();
-  let duplicateSelectorElements = new Set<string>();
-  const queue = [startElement];
-  while (queue.length > 0) {
-    const currentElement = queue.shift()!;
-    const currentElementSelectors = getAllElementSelectors(currentElement);
-    currentElementSelectors.forEach((selector) => {
-      const stringRepresentation = selectorElementToString(selector);
-      if (duplicateSelectorElements.has(stringRepresentation) || uniqueSelectorElements.has(stringRepresentation)) {
-        duplicateSelectorElements.add(stringRepresentation);
-        uniqueSelectorElements.delete(stringRepresentation);
-      } else {
-        uniqueSelectorElements.set(stringRepresentation, selector);
-      }
-    });
-
-    for (const child of currentElement.children) {
-      queue.push(child);
+  // Get all possible elementSelectors for the given element and its children
+  let allSelectorElements: SelectorElement[] = [];
+  startElement.querySelectorAll('*').forEach((element) => {
+    if (isHTMLElement(element)) {
+      allSelectorElements = allSelectorElements.concat(getElementSelector(element));
     }
-  }
+  });
+
+  console.log('allSelectorElements', allSelectorElements);
+
+  // Filter out all duplicate selector elements
+  const uniqueSelectorElements = allSelectorElements.filter((selectorElement, index) => {
+    return !allSelectorElements.some((otherSelectorElement, otherIndex) => {
+      if (index === otherIndex) return false;
+      return compareSelectorElementsEquals(selectorElement, otherSelectorElement);
+    });
+  });
+
+  console.log('uniqueSelectorElements', uniqueSelectorElements);
+
   return uniqueSelectorElements;
+}
+
+function compareSelectorElementsEquals(selectorElement1: SelectorElement, selectorElement2: SelectorElement) {
+  if (selectorElement1.nthChildNecessary && selectorElement2.nthChildNecessary) {
+    return (
+      selectorElement1.type === selectorElement2.type &&
+      selectorElement1.value === selectorElement2.value &&
+      selectorElement1.nthChild === selectorElement2.nthChild
+    );
+  }
+
+  return selectorElement1.type === selectorElement2.type && selectorElement1.value === selectorElement2.value;
 }
 
 /**
@@ -76,7 +83,7 @@ function getUniqueSelectorElements(startElement: Element) {
  * @param element HTMLElement inside the react root element
  * @returns selector string of the element
  */
-export function getElementSelector(element: Element): SelectorElement {
+export function getElementSelector(element: HTMLElement): SelectorElement {
   const reactComponentSelector = getReactComponentElementSelector(element);
   if (reactComponentSelector) return reactComponentSelector;
 
@@ -120,7 +127,7 @@ export function getReactComponentElementSelector(element: Element): SelectorElem
   element.parentNode?.childNodes.forEach((child) => {
     if (
       child != element &&
-      isElement(child) &&
+      isHTMLElement(child) &&
       isReactComponent(child) &&
       getReactComponentNameFromElement(child) === selector.value
     ) {
@@ -142,7 +149,7 @@ export function getIdElementSelector(element: Element): SelectorElement | null {
   };
 
   element.parentNode?.childNodes.forEach((child) => {
-    if (child != element && isElement(child) && child.id === element.id) {
+    if (child != element && isHTMLElement(child) && child.id === element.id) {
       selector.nthChildNecessary = true;
     }
   });
@@ -161,7 +168,7 @@ export function getClassElementSelector(element: Element): SelectorElement | nul
   };
 
   element.parentNode?.childNodes.forEach((child) => {
-    if (child != element && isElement(child) && child.className === element.className) {
+    if (child != element && isHTMLElement(child) && child.className === element.className) {
       selector.nthChildNecessary = true;
     }
   });
@@ -178,7 +185,7 @@ export function getTagElementSelector(element: Element): SelectorElement {
   };
 
   element.parentNode?.childNodes.forEach((child) => {
-    if (child != element && isElement(child) && child.tagName === element.tagName) {
+    if (child != element && isHTMLElement(child) && child.tagName === element.tagName) {
       selector.nthChildNecessary = true;
     }
   });
