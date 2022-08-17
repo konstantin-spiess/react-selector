@@ -20,11 +20,11 @@ export function findReactRoot(startElement: HTMLElement): HTMLElement | null {
 }
 
 /**
- * Typeguard for Element
+ * Typeguard for HTMLElement
  * @param node node to check
  * @returns element type predicate
  */
-export function isElement(node: Node): node is Element {
+export function isHTMLElement(node: Node): node is HTMLElement {
   return node.ELEMENT_NODE === 1;
 }
 
