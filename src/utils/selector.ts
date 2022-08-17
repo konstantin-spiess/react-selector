@@ -13,28 +13,60 @@ export function getSelector(element: HTMLElement): Selector {
   let startElement = element;
   let startElementSelector = getElementSelector(startElement);
 
-  while (!isUniqueSelectorElement(startElementSelector)) {
+  while (!isSelectorElementInArray(startElementSelector, globalUniqueElementSelectors)) {
     startElement = startElement.parentElement!;
     startElementSelector = getElementSelector(startElement);
   }
+  let selector: Selector = [];
 
-  let selector = [];
-  let currentElement = element;
+  if (startElement != element) {
+    let currentElementChild = startElement;
+    while (currentElementChild !== element) {
+      const localUniqueElementSelectors = getUniqueSelectorElements(currentElementChild);
+      const lowestUniqueChild = getLowestUniqueChild(element, currentElementChild, localUniqueElementSelectors);
 
-  // TODO: Replace with optimized algorithm
-  while (currentElement != startElement) {
-    selector.unshift(getElementSelector(currentElement));
-    currentElement = currentElement.parentElement!;
+      if (lowestUniqueChild) {
+        selector.push(getElementSelector(lowestUniqueChild));
+        currentElementChild = getChildElement(lowestUniqueChild, element);
+      } else {
+        selector.push(getElementSelector(getChildElement(startElement, element)));
+        currentElementChild = getChildElement(currentElementChild, element);
+      }
+    }
+    selector.push(getElementSelector(element));
   }
-
   selector.unshift(startElementSelector);
   return selector;
+}
 
-  function isUniqueSelectorElement(selectorElement: SelectorElement) {
-    return globalUniqueElementSelectors.some((uniqueSelectorElement) => {
-      return compareSelectorElementsEquals(selectorElement, uniqueSelectorElement);
-    });
+function getLowestUniqueChild(
+  startElement: HTMLElement,
+  limitElement: HTMLElement,
+  selectorElements: SelectorElement[]
+): HTMLElement | null {
+  let currentElement = startElement;
+  while (currentElement !== limitElement) {
+    if (isSelectorElementInArray(getElementSelector(currentElement), selectorElements)) {
+      return currentElement;
+    }
+    currentElement = currentElement.parentElement!;
   }
+  return null;
+}
+
+function getChildElement(parentElement: HTMLElement, element: HTMLElement) {
+  if (parentElement === element) return element;
+  let currentElement = element;
+  while (currentElement.parentElement !== parentElement) {
+    currentElement = currentElement.parentElement!;
+  }
+  return currentElement;
+}
+
+function isSelectorElementInArray(selectorElement: SelectorElement, selectorElements: SelectorElement[]) {
+  return selectorElements.some((_selectorElement) => {
+    return compareSelectorElementsEquals(selectorElement, _selectorElement);
+  });
 }
 
 /**
@@ -51,8 +83,6 @@ function getUniqueSelectorElements(startElement: Element) {
     }
   });
 
-  console.log('allSelectorElements', allSelectorElements);
-
   // Filter out all duplicate selector elements
   const uniqueSelectorElements = allSelectorElements.filter((selectorElement, index) => {
     return !allSelectorElements.some((otherSelectorElement, otherIndex) => {
@@ -60,8 +90,6 @@ function getUniqueSelectorElements(startElement: Element) {
       return compareSelectorElementsEquals(selectorElement, otherSelectorElement);
     });
   });
-
-  console.log('uniqueSelectorElements', uniqueSelectorElements);
 
   return uniqueSelectorElements;
 }
