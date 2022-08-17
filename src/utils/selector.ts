@@ -17,25 +17,21 @@ export function getSelector(element: HTMLElement): Selector {
     startElement = startElement.parentElement!;
     startElementSelector = getElementSelector(startElement);
   }
-  let selector: Selector = [];
+  let selector: Selector = [startElementSelector];
+  let currentElementChild = startElement;
+  while (currentElementChild !== element) {
+    const localUniqueElementSelectors = getUniqueSelectorElements(currentElementChild);
+    const lowestUniqueChild = getLowestUniqueChild(element, currentElementChild, localUniqueElementSelectors);
 
-  if (startElement != element) {
-    let currentElementChild = startElement;
-    while (currentElementChild !== element) {
-      const localUniqueElementSelectors = getUniqueSelectorElements(currentElementChild);
-      const lowestUniqueChild = getLowestUniqueChild(element, currentElementChild, localUniqueElementSelectors);
-
-      if (lowestUniqueChild) {
-        selector.push(getElementSelector(lowestUniqueChild));
-        currentElementChild = getChildElement(lowestUniqueChild, element);
-      } else {
-        selector.push(getElementSelector(getChildElement(startElement, element)));
-        currentElementChild = getChildElement(currentElementChild, element);
-      }
+    if (lowestUniqueChild) {
+      selector.push(getElementSelector(lowestUniqueChild));
+      currentElementChild = lowestUniqueChild;
+    } else {
+      const childElement = getChildElement(currentElementChild, element);
+      selector.push(getElementSelector(childElement));
+      currentElementChild = childElement;
     }
-    selector.push(getElementSelector(element));
   }
-  selector.unshift(startElementSelector);
   return selector;
 }
 
@@ -79,7 +75,7 @@ function getUniqueSelectorElements(startElement: Element) {
   let allSelectorElements: SelectorElement[] = [];
   startElement.querySelectorAll('*').forEach((element) => {
     if (isHTMLElement(element)) {
-      allSelectorElements = allSelectorElements.concat(getElementSelector(element));
+      allSelectorElements = allSelectorElements.concat(getAllElementSelectors(element));
     }
   });
 
@@ -95,7 +91,7 @@ function getUniqueSelectorElements(startElement: Element) {
 }
 
 function compareSelectorElementsEquals(selectorElement1: SelectorElement, selectorElement2: SelectorElement) {
-  if (selectorElement1.nthChildNecessary && selectorElement2.nthChildNecessary) {
+  if (selectorElement1.nthChildNecessary || selectorElement2.nthChildNecessary) {
     return (
       selectorElement1.type === selectorElement2.type &&
       selectorElement1.value === selectorElement2.value &&
