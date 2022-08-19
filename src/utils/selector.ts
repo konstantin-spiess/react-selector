@@ -186,7 +186,7 @@ export function getClassElementSelector(element: Element): SelectorElement | nul
 
   let selector: SelectorElement = {
     type: SelectorElementType.CLASS,
-    value: element.className,
+    value: element.classList[0],
     nthChild: getIndexInParent(element),
     nthChildNecessary: false,
   };
