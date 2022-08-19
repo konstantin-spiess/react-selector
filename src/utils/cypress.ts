@@ -31,7 +31,7 @@ function getCypressQueryFromSelectorElement(selectorElement: SelectorElement, in
       return `.${functionName}('#${selectorElement.value}')`;
     case SelectorElementType.CLASS:
       nthChild = selectorElement.nthChildNecessary ? `:nth-child(${selectorElement.nthChild})` : '';
-      return `.${functionName}('.${selectorElement.value}${nthChild}')`;
+      return `.${functionName}('[class*=${selectorElement.value}]${nthChild}')`;
     case SelectorElementType.TAG:
       nthChild = selectorElement.nthChildNecessary ? `:nth-child(${selectorElement.nthChild})` : '';
       return `.${functionName}('${selectorElement.value}${nthChild}')`;

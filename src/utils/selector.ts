@@ -197,7 +197,20 @@ export function getClassElementSelector(element: Element): SelectorElement | nul
     }
   });
 
+  if (selector.value) {
+    selector.value = filterNextModuleClassName(selector.value);
+  }
+
   return selector;
+}
+
+function filterNextModuleClassName(className: string) {
+  const regex = '(.*_.*)__\\w{5}';
+  const filteredClassName = className.match(regex);
+  if (filteredClassName) {
+    return filteredClassName[1];
+  }
+  return className;
 }
 
 export function getTagElementSelector(element: Element): SelectorElement {
