@@ -1,12 +1,12 @@
 import { isChangeSelectionMessage, isMessage, isSelectorMessage } from './types/message';
-import selector from './selectorScript?script&module';
+import selectorPageScriptPath from './selectorPageScript?script&module';
 import { ChangeSelectionEvent } from './types/event';
 
 let selectedElement: Element | null;
 
 // Inject selector script into page
 const injectScript = document.createElement('script');
-injectScript.src = chrome.runtime.getURL(selector);
+injectScript.src = chrome.runtime.getURL(selectorPageScriptPath);
 injectScript.type = 'module';
 document.head.prepend(injectScript);
 document.head.removeChild(injectScript);
