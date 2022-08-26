@@ -1,5 +1,7 @@
 import { Message, isInitMessage, isMessage, isLogMessage, isChangeSelectionMessage } from './types/message';
 
+// *** Initial basic code structure from: https://developer.chrome.com/docs/extensions/mv3/messaging/ ***
+
 //
 // Message passing: devtools -> service worker
 //

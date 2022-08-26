@@ -4,7 +4,7 @@ import { ChangeSelectionEvent } from './types/event';
 
 let selectedElement: Element | null;
 
-// Inject selector script into page
+// Inject selector script into page - Source: https://dev.to/jacksteamdev/advanced-config-for-rpce-3966
 const injectScript = document.createElement('script');
 injectScript.src = chrome.runtime.getURL(selectorPageScriptPath);
 injectScript.type = 'module';

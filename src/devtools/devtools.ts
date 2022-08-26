@@ -1,6 +1,8 @@
 import { nanoid } from 'nanoid';
 import { ChangeSelectionMessage, isInitMessage, isMessage, Message } from '../types/message';
 
+// *** Initial basic code structure from: https://developer.chrome.com/docs/extensions/mv3/devtools/ ***
+
 //
 // Message passing: devtools -> service worker
 //
