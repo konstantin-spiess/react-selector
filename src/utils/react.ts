@@ -91,24 +91,3 @@ export function getReactComponentNameFromElement(element: HTMLElement) {
 export function isReactFiberRootNode(fiberNode: FiberNode | FiberRootNode): fiberNode is FiberRootNode {
   return fiberNode.hasOwnProperty('current');
 }
-
-// TODO: remove if not used
-// export function getUniqueReactComponents(startNode: Element) {
-//   let components: string[] = [];
-//   const queue = [startNode];
-//   while (queue.length > 0) {
-//     const currentElement = queue.shift()!;
-//     if (isReactComponent(currentElement)) {
-//       const reactFiber = getReactFiber(currentElement) as FiberNode;
-//       if (!reactFiber) break;
-//       const componentName = getReactComponentNameFromFiber(reactFiber);
-//       if (componentName && !components.includes(componentName)) {
-//         components.push(componentName);
-//       }
-//     }
-//     for (const child of currentElement.children) {
-//       queue.push(child);
-//     }
-//   }
-//   return components;
-// }
