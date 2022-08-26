@@ -2,16 +2,16 @@ import { nanoid } from 'nanoid';
 import { ChangeSelectionMessage, isInitMessage, isMessage, Message } from '../types/message';
 
 //
-// Message passing: devtools -> background
+// Message passing: devtools -> service worker
 //
 
-// Initialize the connection to the background
-const backgroundConnection = chrome.runtime.connect({
+// Initialize the connection to the service worker
+const serviceWorkerConnection = chrome.runtime.connect({
   name: 'devtools',
 });
 
-// Provide tabId to background
-backgroundConnection.postMessage({
+// Provide tabId to service worker
+serviceWorkerConnection.postMessage({
   name: 'init',
   tabId: chrome.devtools.inspectedWindow.tabId,
 });
@@ -33,26 +33,27 @@ chrome.devtools.panels.elements.onSelectionChanged.addListener(() => {
       tabId: chrome.devtools.inspectedWindow.tabId,
       selectionId,
     };
-    backgroundConnection.postMessage(message);
+    serviceWorkerConnection.postMessage(message);
   });
 });
 
 //
-// UI: Sidepanel
+// Create UI: Sidepanel
 //
 chrome.devtools.panels.elements.createSidebarPane('React Selector', (panel) => {
   panel.setPage('src/devtools/panel/panel.html');
 });
 
+// Connections from sidepanel to devtools page
 let connections: { [key: number]: chrome.runtime.Port } = {};
 
-// Manage incomming connections only from devtools
+// Manage incomming connections only from sidepanel
 chrome.runtime.onConnect.addListener((port) => {
   if (port.name !== 'panel') {
     return;
   }
 
-  // Handle different messages in listener
+  // Handle messages sent from sidepanel
   const messageListener = (message: Message) => {
     if (!isMessage(message)) {
       return;
@@ -62,14 +63,11 @@ chrome.runtime.onConnect.addListener((port) => {
       return;
     }
   };
-
-  // Attach listener to devtools connection
   port.onMessage.addListener(messageListener);
 
-  // Handle disconnect
+  // Handle disconnect listener
   port.onDisconnect.addListener((port) => {
     port.onMessage.removeListener(messageListener);
-
     const tabs = Object.keys(connections);
     for (let i = 0, len = tabs.length; i < len; i++) {
       if (connections[Number(tabs[i])] == port) {
@@ -80,21 +78,18 @@ chrome.runtime.onConnect.addListener((port) => {
   });
 });
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // Messages from content scripts should have sender.tab set
-  if (sender.tab) {
-    const tabId = sender.tab.id;
-    if (!tabId) {
-      console.log('tabId is undefined');
-    } else if (tabId in connections) {
-      connections[tabId].postMessage(request);
-    } else {
-      console.log('Tab not found in connection list.');
-    }
-  } else {
-    console.log('sender.tab not defined.');
+//
+// Message passing: service worker -> devtools
+//
+
+// Handle messages sent from service worker and forward them to correct sidepanel connection
+chrome.runtime.onMessage.addListener((message, sender) => {
+  if (!isMessage(message) || !sender.tab || !sender.tab.id) {
+    return;
   }
-  return true;
+  if (sender.tab.id in connections) {
+    connections[sender.tab.id].postMessage(message);
+  }
 });
 
 export {};

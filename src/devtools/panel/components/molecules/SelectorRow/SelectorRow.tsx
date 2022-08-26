@@ -3,7 +3,7 @@ import { FC } from 'react';
 import { Selector } from '../../../../../types/selector';
 import { getCypressQueryFromSelector } from '../../../../../utils/cypress';
 import ClipboardCopyButton from '../ClipboardCopyButton/ClipboardCopyButton';
-import SelectorElement from '../SelectorElement/SelectorElement';
+import SelectorPart from '../SelectorPart/SelectorPart';
 import s from './SelectorRow.module.scss';
 
 export type SelectorRowProps = {
@@ -16,14 +16,14 @@ const SelectorRow: FC<SelectorRowProps> = ({ selector }) => {
       <div className={s.copy}>
         <ClipboardCopyButton value={getCypressQueryFromSelector(selector)} />
       </div>
-      <div className={s.elements}>
+      <div className={s.parts}>
         {selector.map((element, index) => {
           const spacer = index == 0 ? null : <ChevronRightIcon />;
 
           return (
-            <div className={s.element}>
+            <div className={s.part}>
               {spacer}
-              <SelectorElement element={element} />
+              <SelectorPart element={element} />
             </div>
           );
         })}

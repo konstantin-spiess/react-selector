@@ -1,4 +1,4 @@
-.elements {
+.parts {
   display: flex;
   flex-flow: row wrap;
   row-gap: 10px;
@@ -16,7 +16,7 @@
   flex-flow: row nowrap;
 }
 
-.element {
+.part {
   display: flex;
   flex-flow: row nowrap;
   align-items: center;

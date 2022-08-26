@@ -5,7 +5,7 @@ import { FiberNode, FiberRootNode } from 'react-devtools-inline';
  * @param element DOM element
  * @returns true if element is react root
  */
-export function isReactRoot(element: any) {
+export function isReactRoot(element: HTMLElement) {
   if (element.hasOwnProperty('_reactRootContainer')) {
     return true;
   }
@@ -17,7 +17,7 @@ export function isReactRoot(element: any) {
  * @param element DOM element
  * @returns key of fiber property or undefined
  */
-export function getReactFiberKey(element: any) {
+export function getReactFiberKey(element: HTMLElement) {
   return Object.keys(element).find(
     (key) => key.startsWith('__reactInternalInstance') || key.startsWith('__reactFiber')
   );
@@ -28,7 +28,7 @@ export function getReactFiberKey(element: any) {
  * @param element DOM element
  * @returns true if element is a react component
  */
-export function isReactComponent(element: any) {
+export function isReactComponent(element: HTMLElement) {
   if (getReactFiberKey(element)) {
     return true;
   }
@@ -40,13 +40,15 @@ export function isReactComponent(element: any) {
  * @param element DOM element
  * @returns React fiber node or null
  */
-export function getReactFiber(element: any) {
+export function getReactFiber(element: HTMLElement) {
   if (isReactRoot(element)) {
+    // @ts-ignore
     return element._reactRootContainer._internalRoot as FiberRootNode;
   }
   if (isReactComponent(element)) {
     const key = getReactFiberKey(element);
     if (key) {
+      // @ts-ignore
       return element[key] as FiberNode;
     }
   }
@@ -74,7 +76,7 @@ export function getReactComponentNameFromFiber(fiber: FiberNode) {
  * @param element element node
  * @returns React component name or null
  */
-export function getReactComponentNameFromElement(element: Element) {
+export function getReactComponentNameFromElement(element: HTMLElement) {
   const fiber = getReactFiber(element);
   if (!fiber) return null;
   if (isReactFiberRootNode(fiber)) return null;
@@ -82,7 +84,7 @@ export function getReactComponentNameFromElement(element: Element) {
 }
 
 /**
- * Check type FiberRootNode
+ * Typeguard for FiberRootNode
  * @param fiberNode FiberNode oder FiberRootNode
  * @returns true if FiberRootNode
  */
@@ -90,22 +92,23 @@ export function isReactFiberRootNode(fiberNode: FiberNode | FiberRootNode): fibe
   return fiberNode.hasOwnProperty('current');
 }
 
-export function getUniqueReactComponents(startNode: Element) {
-  let components: string[] = [];
-  const queue = [startNode];
-  while (queue.length > 0) {
-    const currentElement = queue.shift()!;
-    if (isReactComponent(currentElement)) {
-      const reactFiber = getReactFiber(currentElement) as FiberNode;
-      if (!reactFiber) break;
-      const componentName = getReactComponentNameFromFiber(reactFiber);
-      if (componentName && !components.includes(componentName)) {
-        components.push(componentName);
-      }
-    }
-    for (const child of currentElement.children) {
-      queue.push(child);
-    }
-  }
-  return components;
-}
+// TODO: remove if not used
+// export function getUniqueReactComponents(startNode: Element) {
+//   let components: string[] = [];
+//   const queue = [startNode];
+//   while (queue.length > 0) {
+//     const currentElement = queue.shift()!;
+//     if (isReactComponent(currentElement)) {
+//       const reactFiber = getReactFiber(currentElement) as FiberNode;
+//       if (!reactFiber) break;
+//       const componentName = getReactComponentNameFromFiber(reactFiber);
+//       if (componentName && !components.includes(componentName)) {
+//         components.push(componentName);
+//       }
+//     }
+//     for (const child of currentElement.children) {
+//       queue.push(child);
+//     }
+//   }
+//   return components;
+// }

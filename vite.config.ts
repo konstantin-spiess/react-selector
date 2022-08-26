@@ -11,13 +11,13 @@ const manifest = defineManifest({
   version,
   devtools_page: 'src/devtools/devtools.html',
   background: {
-    service_worker: 'src/background.ts',
+    service_worker: 'src/serviceWorker.ts',
     type: 'module',
   },
   content_scripts: [
     {
       matches: ['http://*/*', 'https://*/*'],
-      js: ['src/content.ts'],
+      js: ['src/contentScript.ts'],
     },
   ],
 });

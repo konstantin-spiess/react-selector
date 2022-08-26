@@ -1,7 +1,7 @@
 import { CopyIcon } from '@radix-ui/react-icons';
 import { FC } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { toast, ToastContainer } from 'react-toastify';
+import { toast } from 'react-toastify';
 import s from './ClipboardCopyButton.module.scss';
 
 export type ClipboardCopyButtonProps = {

@@ -1,6 +1,6 @@
-import { Selector, SelectorElement, SelectorElementType } from '../types/selector';
+import { Selector, SelectorPart, SelectorPartType } from '../types/selector';
 import { getIndexInParent, isHTMLElement } from './dom';
-import { getReactComponentNameFromElement, isReactComponent, isReactRoot } from './react';
+import { getReactComponentNameFromElement, isReactComponent } from './react';
 
 /**
  * Get the selector for the given element
@@ -8,41 +8,52 @@ import { getReactComponentNameFromElement, isReactComponent, isReactRoot } from 
  * @returns Selector for the given element
  */
 export function getSelector(element: HTMLElement): Selector {
-  const globalUniqueElementSelectors = getUniqueSelectorElements(document.body);
+  // All possible Selectors with one SelectorPart that are unique in document.body
+  const globalUniqueElementSelectors = getUniqueSelectorParts(document.body);
 
   let startElement = element;
-  let startElementSelector = getElementSelector(startElement);
+  let startElementSelector = getSelectorPart(startElement);
 
-  while (!isSelectorElementInArray(startElementSelector, globalUniqueElementSelectors)) {
+  // Get the lowest element that has a global unique selector
+  while (!isSelectorPartInArray(startElementSelector, globalUniqueElementSelectors)) {
     startElement = startElement.parentElement!;
-    startElementSelector = getElementSelector(startElement);
+    startElementSelector = getSelectorPart(startElement);
   }
+
   let selector: Selector = [startElementSelector];
   let currentElementChild = startElement;
+
   while (currentElementChild !== element) {
-    const localUniqueElementSelectors = getUniqueSelectorElements(currentElementChild);
+    const localUniqueElementSelectors = getUniqueSelectorParts(currentElementChild);
     const lowestUniqueChild = getLowestUniqueChild(element, currentElementChild, localUniqueElementSelectors);
 
     if (lowestUniqueChild) {
-      selector.push(getElementSelector(lowestUniqueChild));
+      selector.push(getSelectorPart(lowestUniqueChild));
       currentElementChild = lowestUniqueChild;
     } else {
       const childElement = getChildElement(currentElementChild, element);
-      selector.push(getElementSelector(childElement));
+      selector.push(getSelectorPart(childElement));
       currentElementChild = childElement;
     }
   }
   return selector;
 }
 
+/**
+ *
+ * @param startElement Element to start the search from
+ * @param limitElement Element to stop the search at
+ * @param selectorParts Array of all unique selector parts within the limit element
+ * @returns Lowest child element that has a unique selector within the limit element
+ */
 function getLowestUniqueChild(
   startElement: HTMLElement,
   limitElement: HTMLElement,
-  selectorElements: SelectorElement[]
+  selectorParts: SelectorPart[]
 ): HTMLElement | null {
   let currentElement = startElement;
   while (currentElement !== limitElement) {
-    if (isSelectorElementInArray(getElementSelector(currentElement), selectorElements)) {
+    if (isSelectorPartInArray(getSelectorPart(currentElement), selectorParts)) {
       return currentElement;
     }
     currentElement = currentElement.parentElement!;
@@ -50,6 +61,12 @@ function getLowestUniqueChild(
   return null;
 }
 
+/**
+ * Get the child element of the given parent element that contains the given element
+ * @param parentElement Parent element of the child to get
+ * @param element Element that is contained in the child
+ * @returns The child element that contains the given element
+ */
 function getChildElement(parentElement: HTMLElement, element: HTMLElement) {
   if (parentElement === element) return element;
   let currentElement = element;
@@ -59,119 +76,146 @@ function getChildElement(parentElement: HTMLElement, element: HTMLElement) {
   return currentElement;
 }
 
-function isSelectorElementInArray(selectorElement: SelectorElement, selectorElements: SelectorElement[]) {
-  return selectorElements.some((_selectorElement) => {
-    return compareSelectorElementsEquals(selectorElement, _selectorElement);
+/**
+ * Check if the given selector part is in the given array of selector parts
+ * @param selectorPart Selector part to check
+ * @param selectorParts Array of selector parts to check against
+ * @returns True if the selector part is in the array, false otherwise
+ */
+function isSelectorPartInArray(selectorPart: SelectorPart, selectorParts: SelectorPart[]) {
+  return selectorParts.some((_selectorPart) => {
+    return compareSelectorPartsEquals(selectorPart, _selectorPart);
   });
 }
 
 /**
- * Gets all unique selectors for the given element and its children
- * @param startElement Rootelement to start the search from
- * @returns Set of all unique selectors for the given element and its children
+ * Get all unique selector parts for elements that are contained in the given element
+ * @param startElement Element to start the search from
+ * @returns Array of unique selector parts
  */
-function getUniqueSelectorElements(startElement: Element) {
-  // Get all possible elementSelectors for the given element and its children
-  let allSelectorElements: SelectorElement[] = [];
+function getUniqueSelectorParts(startElement: HTMLElement) {
+  // All possible element parts for elements that are contained in the given element
+  let allSelectorElements: SelectorPart[] = [];
   startElement.querySelectorAll('*').forEach((element) => {
     if (isHTMLElement(element)) {
-      allSelectorElements = allSelectorElements.concat(getAllElementSelectors(element));
+      allSelectorElements = allSelectorElements.concat(getAllSelectorParts(element));
     }
   });
 
-  // Filter out all duplicate selector elements
-  const uniqueSelectorElements = allSelectorElements.filter((selectorElement, index) => {
-    return !allSelectorElements.some((otherSelectorElement, otherIndex) => {
-      if (index === otherIndex) return false;
-      return compareSelectorElementsEquals(selectorElement, otherSelectorElement);
+  // Filter out all duplicate selector parts
+  const uniqueSelectorElements = allSelectorElements.filter((selectorPart, index) => {
+    return !allSelectorElements.some((_selectorPart, _index) => {
+      if (index === _index) return false;
+      return compareSelectorPartsEquals(selectorPart, _selectorPart);
     });
   });
 
   return uniqueSelectorElements;
 }
 
-function compareSelectorElementsEquals(selectorElement1: SelectorElement, selectorElement2: SelectorElement) {
-  if (selectorElement1.nthChildNecessary || selectorElement2.nthChildNecessary) {
-    return (
-      selectorElement1.type === selectorElement2.type &&
-      selectorElement1.value === selectorElement2.value &&
-      selectorElement1.nthChild === selectorElement2.nthChild
-    );
-  }
-
-  return selectorElement1.type === selectorElement2.type && selectorElement1.value === selectorElement2.value;
+/**
+ * Check if the given selector parts are equal
+ * @param selectorElement1 Selector part to check
+ * @param selectorElement2 Selector part to check against
+ * @returns True if the selector parts are equal, false otherwise
+ */
+function compareSelectorPartsEquals(selectorElement1: SelectorPart, selectorElement2: SelectorPart) {
+  const type = selectorElement1.type === selectorElement2.type;
+  const value = selectorElement1.value === selectorElement2.value;
+  const nthChild =
+    selectorElement1.nthChildNecessary || selectorElement2.nthChildNecessary
+      ? selectorElement1.nthChild === selectorElement2.nthChild
+      : true;
+  return type && value && nthChild;
 }
 
 /**
- * Returns the selector for the given element
- * @param element HTMLElement inside the react root element
- * @returns selector string of the element
+ * Get the selector part for the given element
+ * @param element Element to get the selector part for
+ * @returns Selector part for the given element
  */
-export function getElementSelector(element: HTMLElement): SelectorElement {
-  const reactComponentSelector = getReactComponentElementSelector(element);
-  if (reactComponentSelector) return reactComponentSelector;
+export function getSelectorPart(element: HTMLElement): SelectorPart {
+  const reactComponentSelectorPart = getReactComponentSelectorPart(element);
+  if (reactComponentSelectorPart) return reactComponentSelectorPart;
 
-  const idSelector = getIdElementSelector(element);
-  if (idSelector) return idSelector;
+  const idSelectorPart = getIdSelectorPart(element);
+  if (idSelectorPart) return idSelectorPart;
 
-  const classSelector = getClassElementSelector(element);
-  if (classSelector) return classSelector;
+  const classSelectorPart = getClassSelectorPart(element);
+  if (classSelectorPart) return classSelectorPart;
 
-  return getTagElementSelector(element);
+  return getTagSelectorPart(element);
 }
 
-export function getAllElementSelectors(element: Element): SelectorElement[] {
-  let elementSelectors: SelectorElement[] = [];
+/**
+ * Get all possible selector parts for the given element
+ * @param element Element to get the selector parts for
+ * @returns Array of all possible selector parts for the given element
+ */
+export function getAllSelectorParts(element: HTMLElement): SelectorPart[] {
+  let elementSelectors: SelectorPart[] = [];
 
-  const reactComponentSelector = getReactComponentElementSelector(element);
-  if (reactComponentSelector) elementSelectors.push(reactComponentSelector);
+  const reactComponentSelectorPart = getReactComponentSelectorPart(element);
+  if (reactComponentSelectorPart) elementSelectors.push(reactComponentSelectorPart);
 
-  const idSelector = getIdElementSelector(element);
-  if (idSelector) elementSelectors.push(idSelector);
+  const idSelectorPart = getIdSelectorPart(element);
+  if (idSelectorPart) elementSelectors.push(idSelectorPart);
 
-  const classSelector = getClassElementSelector(element);
-  if (classSelector) elementSelectors.push(classSelector);
+  const classSelectorPart = getClassSelectorPart(element);
+  if (classSelectorPart) elementSelectors.push(classSelectorPart);
 
-  elementSelectors.push(getTagElementSelector(element));
+  elementSelectors.push(getTagSelectorPart(element));
 
   return elementSelectors;
 }
 
-export function getReactComponentElementSelector(element: Element): SelectorElement | null {
+/**
+ * Get the selector part for the given element if it is a react component
+ * @param element Element to get the selector part for
+ * @returns Selector part for the given element if it is a react component, null otherwise
+ */
+export function getReactComponentSelectorPart(element: HTMLElement): SelectorPart | null {
   const name = getReactComponentNameFromElement(element);
   if (!name) return null;
 
-  let selector: SelectorElement = {
-    type: SelectorElementType.REACT_COMPONENT,
+  let selectorPart: SelectorPart = {
+    type: SelectorPartType.REACT_COMPONENT,
     value: name,
     nthChild: getIndexInParent(element),
     nthChildNecessary: false,
   };
 
+  // Check necessity of nth child
   element.parentNode?.childNodes.forEach((child) => {
     if (
       child != element &&
       isHTMLElement(child) &&
       isReactComponent(child) &&
-      getReactComponentNameFromElement(child) === selector.value
+      getReactComponentNameFromElement(child) === selectorPart.value
     ) {
-      selector.nthChildNecessary = true;
+      selectorPart.nthChildNecessary = true;
     }
   });
 
-  return selector;
+  return selectorPart;
 }
 
-export function getIdElementSelector(element: Element): SelectorElement | null {
+/**
+ * Get the id selector part for the given element if it has an id
+ * @param element Element to get the id selector part for
+ * @returns Selector part for the given element if it has an id, null otherwise
+ */
+export function getIdSelectorPart(element: HTMLElement): SelectorPart | null {
   if (!element.id) return null;
 
-  let selector: SelectorElement = {
-    type: SelectorElementType.ID,
+  let selector: SelectorPart = {
+    type: SelectorPartType.ID,
     value: element.id,
     nthChild: getIndexInParent(element),
     nthChildNecessary: false,
   };
 
+  // Check necessity of nth child
   element.parentNode?.childNodes.forEach((child) => {
     if (child != element && isHTMLElement(child) && child.id === element.id) {
       selector.nthChildNecessary = true;
@@ -181,30 +225,42 @@ export function getIdElementSelector(element: Element): SelectorElement | null {
   return selector;
 }
 
-export function getClassElementSelector(element: Element): SelectorElement | null {
+/**
+ * Get the class selector part for the given element if it has a class
+ * @param element Element to get the class selector part for
+ * @returns Selector part for the given element if it has a class, null otherwise
+ */
+export function getClassSelectorPart(element: HTMLElement): SelectorPart | null {
   if (!element.className) return null;
 
-  let selector: SelectorElement = {
-    type: SelectorElementType.CLASS,
+  let selector: SelectorPart = {
+    type: SelectorPartType.CLASS,
     value: element.classList[0],
     nthChild: getIndexInParent(element),
     nthChildNecessary: false,
   };
 
+  // Check necessity of nth child
   element.parentNode?.childNodes.forEach((child) => {
     if (child != element && isHTMLElement(child) && child.className === element.className) {
       selector.nthChildNecessary = true;
     }
   });
 
+  // Handle next scss module class names
   if (selector.value) {
-    selector.value = filterNextModuleClassName(selector.value);
+    selector.value = sanatizeNextModuleClassName(selector.value);
   }
 
   return selector;
 }
 
-function filterNextModuleClassName(className: string) {
+/**
+ * Sanatizes the given class name if it is a next module class name
+ * @param className Class name to sanatize
+ * @returns Sanatized class name
+ */
+function sanatizeNextModuleClassName(className: string) {
   const regex = '(.*_.*)__\\w{5}';
   const filteredClassName = className.match(regex);
   if (filteredClassName) {
@@ -213,14 +269,20 @@ function filterNextModuleClassName(className: string) {
   return className;
 }
 
-export function getTagElementSelector(element: Element): SelectorElement {
-  let selector: SelectorElement = {
-    type: SelectorElementType.TAG,
+/**
+ * Get the tag selector part for the given element if it is a tag
+ * @param element Element to get the tag selector part for
+ * @returns Selector part for the given element if it is a tag, null otherwise
+ */
+export function getTagSelectorPart(element: HTMLElement): SelectorPart {
+  let selector: SelectorPart = {
+    type: SelectorPartType.TAG,
     value: element.tagName.toLowerCase(),
     nthChild: getIndexInParent(element),
     nthChildNecessary: false,
   };
 
+  // Check necessity of nth child
   element.parentNode?.childNodes.forEach((child) => {
     if (child != element && isHTMLElement(child) && child.tagName === element.tagName) {
       selector.nthChildNecessary = true;
@@ -228,15 +290,4 @@ export function getTagElementSelector(element: Element): SelectorElement {
   });
 
   return selector;
-}
-
-/**
- * Convert SelectorElement to string representation
- * @param selectorElement SelectorElement to convert
- * @returns string representation of the selector element
- */
-function selectorElementToString(selectorElement: SelectorElement) {
-  return `${selectorElement.type}${selectorElement.value ? `[${selectorElement.value}]` : ''}${
-    selectorElement.nthChild ? `:nth-child(${selectorElement.nthChild})` : ''
-  }`;
 }

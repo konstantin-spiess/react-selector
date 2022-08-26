@@ -1,15 +1,15 @@
-export type SelectorElement = {
-  type: SelectorElementType;
+export type SelectorPart = {
+  type: SelectorPartType;
   value: string;
   nthChild: number;
   nthChildNecessary: boolean;
 };
 
-export enum SelectorElementType {
+export enum SelectorPartType {
   ID = 'Id',
   CLASS = 'Class',
   TAG = 'Tag',
   REACT_COMPONENT = 'Component',
 }
 
-export type Selector = SelectorElement[];
+export type Selector = SelectorPart[];

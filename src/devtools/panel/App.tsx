@@ -1,5 +1,4 @@
 import { Slide, ToastContainer } from 'react-toastify';
-import './App.scss';
 import AppContent from './components/organisms/AppContent';
 import { SelectorContextProvider } from './contexts/SelectorContext';
 

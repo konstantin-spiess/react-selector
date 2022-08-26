@@ -1,10 +1,10 @@
 import { Message, isInitMessage, isMessage, isLogMessage, isChangeSelectionMessage } from './types/message';
 
 //
-// Message passing: devtools -> background
+// Message passing: devtools -> service worker
 //
 
-// Connections from devtools to background
+// Connections from devtools to service worker
 let connections: { [key: number]: chrome.runtime.Port } = {};
 
 // Manage incomming connections only from devtools
@@ -13,7 +13,7 @@ chrome.runtime.onConnect.addListener((port) => {
     return;
   }
 
-  // Handle different messages in listener
+  // Handle messages sent from devtools
   const messageListener = (message: Message) => {
     if (!isMessage(message)) {
       return;
@@ -24,19 +24,18 @@ chrome.runtime.onConnect.addListener((port) => {
     }
     if (isLogMessage(message)) {
       console.log(message.payload);
+      return;
     }
     if (isChangeSelectionMessage(message)) {
       chrome.tabs.sendMessage(message.tabId, message);
+      return;
     }
   };
-
-  // Attach listener to devtools connection
   port.onMessage.addListener(messageListener);
 
-  // Handle disconnect
+  // Handle disconnect listener
   port.onDisconnect.addListener((port) => {
     port.onMessage.removeListener(messageListener);
-
     const tabs = Object.keys(connections);
     for (let i = 0, len = tabs.length; i < len; i++) {
       if (connections[Number(tabs[i])] == port) {
@@ -47,27 +46,18 @@ chrome.runtime.onConnect.addListener((port) => {
   });
 });
 
-/**
- * TODO: Message passing: content script -> background
- */
+//
+// Message passing: content script -> service worker
+//
 
-// Receive message from content script and relay to the devTools page for the
-// current tab
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  // Messages from content scripts should have sender.tab set
-  if (sender.tab) {
-    const tabId = sender.tab.id;
-    if (!tabId) {
-      console.log('tabId is undefined');
-    } else if (tabId in connections) {
-      connections[tabId].postMessage(request);
-    } else {
-      console.log('Tab not found in connection list.');
-    }
-  } else {
-    console.log('sender.tab not defined.');
+// Handle messages sent from content script and forward them to correct devtools connection
+chrome.runtime.onMessage.addListener((message, sender) => {
+  if (!isMessage(message) || !sender.tab || !sender.tab.id) {
+    return;
   }
-  return true;
+  if (sender.tab.id in connections) {
+    connections[sender.tab.id].postMessage(message);
+  }
 });
 
 export {};

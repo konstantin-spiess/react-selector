@@ -33,7 +33,7 @@ export function isHTMLElement(node: Node): node is HTMLElement {
  * @param element element to get index of
  * @returns index or -1 if not found
  */
-export function getIndexInParent(element: Element): number {
+export function getIndexInParent(element: HTMLElement): number {
   let index = 1;
   for (const child of element.parentNode!.children) {
     if (child === element) {
@@ -43,23 +43,3 @@ export function getIndexInParent(element: Element): number {
   }
   return -1;
 }
-
-// export function getUniqueElements(startNode: Element) {
-//   let components: string[] = [];
-//   const queue = [startNode];
-//   while (queue.length > 0) {
-//     const currentElement = queue.shift()!;
-
-//     const reactFiber = getReactFiber(currentElement) as FiberNode;
-//     if (!reactFiber) break;
-//     const componentName = getReactComponentNameFromFiber(reactFiber);
-//     if (componentName && !components.includes(componentName)) {
-//       components.push(componentName);
-//     }
-
-//     for (const child of currentElement.children) {
-//       queue.push(child);
-//     }
-//   }
-//   return components;
-// }

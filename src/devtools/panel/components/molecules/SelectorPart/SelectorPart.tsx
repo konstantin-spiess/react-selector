@@ -1,14 +1,14 @@
 import React, { FC } from 'react';
-import { SelectorElement as SelectorElementType } from '../../../../../types/selector';
-import s from './SelectorElement.module.scss';
+import { SelectorPart as SelectorPartType } from '../../../../../types/selector';
+import s from './SelectorPart.module.scss';
 import Text from '../../atoms/Text/Text';
 import Label from '../../atoms/Label/Label';
 
-export type SelectorElementProps = {
-  element: SelectorElementType;
+export type SelectorPartProps = {
+  element: SelectorPartType;
 };
 
-const SelectorElement: FC<SelectorElementProps> = ({ element }) => {
+const SelectorPart: FC<SelectorPartProps> = ({ element }) => {
   return (
     <div className={s.wrapper}>
       <div className={s.text}>
@@ -24,4 +24,4 @@ const SelectorElement: FC<SelectorElementProps> = ({ element }) => {
   );
 };
 
-export default SelectorElement;
+export default SelectorPart;
