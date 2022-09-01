@@ -6,6 +6,6 @@ Needs [Cypress React Selector Plugin](https://github.com/abhinaba-ghosh/cypress-
 
 ## Installation
 
-1. Install node packages with `pnpm install` or `npm install`
-2. Build the extension with `pnpm build` or `npm run build` into the _dist_ folder
+1. Install node packages with `pnpm install`
+2. Build the extension with `pnpm build` into the _dist_ folder
 3. Load the extension in the chrome browser [(HowTo)](https://developer.chrome.com/docs/extensions/mv3/getstarted/#unpacked)
