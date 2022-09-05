@@ -9,31 +9,34 @@ import { getReactComponentNameFromElement, isReactComponent } from './react';
  */
 export function getSelector(element: HTMLElement): Selector {
   // All possible Selectors with one SelectorPart that are unique in document.body
-  const globalUniqueElementSelectors = getUniqueSelectorParts(document.body);
+  const globalUniqueSelectorParts = getUniqueSelectorParts(document.body);
 
   let startElement = element;
-  let startElementSelector = getSelectorPart(startElement);
+  let startElementSelectorPart = getSelectorPart(startElement);
 
   // Get the lowest element that has a global unique selector
-  while (!isSelectorPartInArray(startElementSelector, globalUniqueElementSelectors)) {
+  while (!isSelectorPartInArray(startElementSelectorPart, globalUniqueSelectorParts)) {
     startElement = startElement.parentElement!;
-    startElementSelector = getSelectorPart(startElement);
+    startElementSelectorPart = getSelectorPart(startElement);
   }
 
-  let selector: Selector = [startElementSelector];
-  let currentElementChild = startElement;
+  let selector: Selector = [startElementSelectorPart];
+  let currentElement = startElement;
 
-  while (currentElementChild !== element) {
-    const localUniqueElementSelectors = getUniqueSelectorParts(currentElementChild);
-    const lowestUniqueChild = getLowestUniqueChild(element, currentElementChild, localUniqueElementSelectors);
+  // go down the tree until we reach the given element
+  while (currentElement !== element) {
+    // get all unique selector parts in context of the current element
+    const localUniqueSelectorParts = getUniqueSelectorParts(currentElement);
+    const lowestUniqueChild = getLowestUniqueChild(element, currentElement, localUniqueSelectorParts);
 
+    // if there is no unique child, use the child element of the current element that contains the given element
     if (lowestUniqueChild) {
       selector.push(getSelectorPart(lowestUniqueChild));
-      currentElementChild = lowestUniqueChild;
+      currentElement = lowestUniqueChild;
     } else {
-      const childElement = getChildElement(currentElementChild, element);
+      const childElement = getChildElement(currentElement, element);
       selector.push(getSelectorPart(childElement));
-      currentElementChild = childElement;
+      currentElement = childElement;
     }
   }
   return selector;
