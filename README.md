@@ -4,6 +4,11 @@ A chrome extension to automatically generate Cypress selectors for your React ap
 
 Needs [Cypress React Selector Plugin](https://github.com/abhinaba-ghosh/cypress-react-selector)
 
+## Prerequisites
+
+- Node
+- pnpm
+
 ## Installation
 
 1. Install node packages with `pnpm install`

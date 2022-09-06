@@ -16,7 +16,7 @@ chrome.runtime.onConnect.addListener((port) => {
   }
 
   // Handle messages sent from devtools
-  const messageListener = (message: Message) => {
+  const messageListener = (message: any) => {
     if (!isMessage(message)) {
       return;
     }

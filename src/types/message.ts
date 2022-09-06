@@ -4,7 +4,7 @@ export interface Message {
   name: string;
 }
 
-export function isMessage(message: Message): message is Message {
+export function isMessage(message: any): message is Message {
   return typeof message.name === 'string';
 }
 
