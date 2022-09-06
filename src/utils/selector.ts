@@ -98,36 +98,36 @@ function isSelectorPartInArray(selectorPart: SelectorPart, selectorParts: Select
  */
 function getUniqueSelectorParts(startElement: HTMLElement) {
   // All possible element parts for elements that are contained in the given element
-  let allSelectorElements: SelectorPart[] = [];
+  let allSelectorParts: SelectorPart[] = [];
   startElement.querySelectorAll('*').forEach((element) => {
     if (isHTMLElement(element)) {
-      allSelectorElements = allSelectorElements.concat(getAllSelectorParts(element));
+      allSelectorParts = allSelectorParts.concat(getAllSelectorParts(element));
     }
   });
 
   // Filter out all duplicate selector parts
-  const uniqueSelectorElements = allSelectorElements.filter((selectorPart, index) => {
-    return !allSelectorElements.some((_selectorPart, _index) => {
+  const uniqueSelectorParts = allSelectorParts.filter((selectorPart, index) => {
+    return !allSelectorParts.some((_selectorPart, _index) => {
       if (index === _index) return false;
       return compareSelectorPartsEquals(selectorPart, _selectorPart);
     });
   });
 
-  return uniqueSelectorElements;
+  return uniqueSelectorParts;
 }
 
 /**
  * Check if the given selector parts are equal
- * @param selectorElement1 Selector part to check
- * @param selectorElement2 Selector part to check against
+ * @param selectorPart1 Selector part to check
+ * @param selectorPart2 Selector part to check against
  * @returns True if the selector parts are equal, false otherwise
  */
-function compareSelectorPartsEquals(selectorElement1: SelectorPart, selectorElement2: SelectorPart) {
-  const type = selectorElement1.type === selectorElement2.type;
-  const value = selectorElement1.value === selectorElement2.value;
+function compareSelectorPartsEquals(selectorPart1: SelectorPart, selectorPart2: SelectorPart) {
+  const type = selectorPart1.type === selectorPart2.type;
+  const value = selectorPart1.value === selectorPart2.value;
   const nthChild =
-    selectorElement1.nthChildNecessary || selectorElement2.nthChildNecessary
-      ? selectorElement1.nthChild === selectorElement2.nthChild
+    selectorPart1.nthChildNecessary || selectorPart2.nthChildNecessary
+      ? selectorPart1.nthChild === selectorPart2.nthChild
       : true;
   return type && value && nthChild;
 }
