@@ -20,7 +20,7 @@ export function findReactRoot(startElement: HTMLElement): HTMLElement | null {
 }
 
 /**
- * Typeguard for HTMLElement
+ * Type Predicate for HTMLElement
  * @param node node to check
  * @returns element type predicate
  */

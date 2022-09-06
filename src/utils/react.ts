@@ -84,7 +84,7 @@ export function getReactComponentNameFromElement(element: HTMLElement) {
 }
 
 /**
- * Typeguard for FiberRootNode
+ * Type Predicate for FiberRootNode
  * @param fiberNode FiberNode oder FiberRootNode
  * @returns true if FiberRootNode
  */
